@@ -1,5 +1,7 @@
 spring:
   security:
+    filter:
+      order: -100
     jwt:
       key: abcdefghijk
       expire:  3

@@ -4,7 +4,7 @@ import {ElMessage} from "element-plus";
 const authItemName = 'access_token'
 const deFaultFailure = (message, code, url) => {
     console.warn(`请求地址： ${url},状态码：${code}, 错误信息：${message}`)
-    ElMessage.warning('message')
+    ElMessage.warning(`${message}`)
 }
 const deFaultError = (err) => {
     console.error(err)
@@ -57,6 +57,14 @@ function internalGet(url, header, success, failure, error = deFaultError) {
     }).catch(err => error(err))
 }
 
+function get(url, success, failure = deFaultFailure) {
+    internalGet(url, accessHeader(), success, failure)
+}
+
+function post(url, data, success, failure = deFaultFailure) {
+    internalPost(url, data, accessHeader(), success, failure)
+}
+
 function login(username, password, remember, success, failure = deFaultFailure) {
     internalPost('/api/auth/login', {
         username: username,
@@ -64,10 +72,27 @@ function login(username, password, remember, success, failure = deFaultFailure) 
     }, {
         'Content-Type': 'application/x-www-form-urlencoded'
     }, (data) => {
-        storeAccessToken(remember,data.token, data.expire)
+        storeAccessToken(data.token, remember, data.expire)
         ElMessage.success(`登录成功，欢迎${data.username}进入游学管理平台！`)
         success(data)
     }, failure)
 }
 
-export {login}
+function accessHeader() {
+    const token = takeAccessToken();
+    return token ? {'Authorization': `Bearer ${takeAccessToken()}`} : {}
+}
+
+function logout(success, failure = deFaultFailure) {
+    get('/api/auth/logout', () => {
+        deleteAccessToken()
+        ElMessage.success('退出登录成功！ 欢迎您再次使用')
+        success()
+    }, failure)
+}
+
+function unauthorized() {
+    return !takeAccessToken()
+}
+
+export {login, logout, get, post, unauthorized}
