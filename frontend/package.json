@@ -13,7 +13,10 @@
     "axios": "^1.6.7",
     "element-plus": "^2.6.0",
     "vue": "^3.4.15",
-    "vue-router": "^4.3.0"
+    "vue-router": "^4.3.0",
+    "aos": "^2.3.4",
+    "owl.carousel": "^2.3.4",
+    "swiper": "^11.0.7"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.3",

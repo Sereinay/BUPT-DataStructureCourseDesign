@@ -19,6 +19,18 @@ const router = createRouter({
             path: '/index',
             name: 'index',
             component: () => import('@/views/IndexView.vue')
+        },{
+            path:'/InnerNavigate',
+            name:'inner-navigate',
+            component:()=> import('@/components/InnerNavigate.vue')
+        },{
+            path:'/TravelLanding',
+            name:'travel-landing',
+            component:()=> import('@/components/TravelLanding.vue')
+        },{
+            path:'/WelcomeHost',
+            name:'welcome-host',
+            component:()=> import('@/components/WelcomeHost.vue')
         }
     ]
 })

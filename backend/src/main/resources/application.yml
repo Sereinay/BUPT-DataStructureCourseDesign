@@ -1,4 +1,13 @@
 spring:
+  mail:
+    host:
+    username:
+    password:
+  rabbitmq:
+    addresses: localhost
+    username: admin
+    password: admin
+    virtual-host: /
   security:
     filter:
       order: -100
