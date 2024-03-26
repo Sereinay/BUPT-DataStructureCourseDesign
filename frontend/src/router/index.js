@@ -13,24 +13,33 @@ const router = createRouter({
                     path: '',
                     name: 'welcome-login',
                     component: () => import('@/views/welcome/LoginPage.vue')
+                },
+                {
+                    path: 'register',
+                    name: 'welcome-register',
+                    component: () => import('@/views/welcome/RegisterPage.vue')
                 }
             ]
-        }, {
+        },
+        {
             path: '/index',
             name: 'index',
             component: () => import('@/views/IndexView.vue')
-        },{
-            path:'/InnerNavigate',
-            name:'inner-navigate',
-            component:()=> import('@/components/InnerNavigate.vue')
-        },{
-            path:'/TravelLanding',
-            name:'travel-landing',
-            component:()=> import('@/components/TravelLanding.vue')
-        },{
-            path:'/WelcomeHost',
-            name:'welcome-host',
-            component:()=> import('@/components/WelcomeHost.vue')
+        },
+        {
+            path: '/InnerNavigate',
+            name: 'inner-navigate',
+            component: () => import('@/components/InnerNavigate.vue')
+        },
+        {
+            path: '/TravelLanding',
+            name: 'travel-landing',
+            component: () => import('@/components/TravelLanding.vue')
+        },
+        {
+            path: '/WelcomeHost',
+            name: 'welcome-host',
+            component: () => import('@/components/WelcomeHost.vue')
         }
     ]
 })

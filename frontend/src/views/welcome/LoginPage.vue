@@ -76,7 +76,7 @@ function userLogin() {
       <span style="background-color:aliceblue ;color: grey"></span>
     </el-divider>
     <div>
-      <el-button style="width: 270px" type="info" plain>立即注册</el-button>
+      <el-button @click="router.push('/register')" style="width: 270px" type="info" plain>立即注册</el-button>
     </div>
   </div>
 </template>
