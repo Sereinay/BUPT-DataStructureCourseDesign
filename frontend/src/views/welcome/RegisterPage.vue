@@ -94,7 +94,7 @@ function register() {
     <div style="margin-top: 50px">
       <el-form :model="form" :rules="rule" ref="formRef">
         <el-form-item prop="username">
-          <el-input v-model="form.username" maxlength="10" type="text" placeholder="用户名">
+          <el-input v-model="form.username" maxlength="40" type="text" placeholder="用户名">
             <template #prefix>
               <el-icon>
                 <User/>

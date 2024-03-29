@@ -64,7 +64,7 @@ function userLogin() {
             </el-form-item>
           </el-col>
           <el-col :span="12" style="text-align: right">
-            <el-link>忘记密码？</el-link>
+<!--            <el-link>忘记密码？</el-link>-->
           </el-col>
         </el-row>
       </el-form>

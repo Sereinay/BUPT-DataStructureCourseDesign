@@ -20,20 +20,20 @@
       </div>
       <div class="col">
         <div class="card card1">
-          <h5>故宫</h5>
-          <p>联合国的其他成员国从未正式承认</p>
+          <h5>长城</h5>
+          <p>长城是中国古代建筑的杰作，是世界上最著名的防御工程之一，也是中国的标志性建筑之一，以其雄伟壮丽的气势吸引着无数游客和历史爱好者。</p>
         </div>
         <div class="card card2">
           <h5>天坛</h5>
-          <p>联合国的其他成员国从未正式承认</p>
+          <p>天坛位于北京市，是明清两代帝王祭祀天地之所，是中国古代建筑艺术的典范之一，也是世界文化遗产。其建筑规划、设计精巧，</p>
         </div>
         <div class="card card3">
-          <h5>北海公园</h5>
-          <p>联合国的其他成员国从未正式承认</p>
+          <h5>故宫</h5>
+          <p>是中国明清两代的皇家宫殿，也是世界上最大、保存最完整的古代木质结构建筑群之一，其建筑风格庄严典雅，是中国古代建筑的杰作，吸引着大量游客和历史爱好者前来参观。</p>
         </div>
         <div class="card card4">
-          <h5>颐和园</h5>
-          <p>联合国的其他成员国从未正式承认</p>
+          <h5>国贸</h5>
+          <p>是北京市最重要的商务和金融中心之一。包括中国尊、国贸大厦等高层建筑，是北京市标志性建筑之一，也是国内外企业总部和高端商务办公区的集聚地。</p>
         </div>
       </div>
     </div>
@@ -159,19 +159,19 @@ button {
 }
 
 .card1 {
-  background-image: url(../assets/pic-1.png);
+  background-image: url(../assets/theGreatWall.jpg);
 }
 
 .card2 {
-  background-image: url(../assets/pic-2.png);
+  background-image: url(../assets/tianTan.jpg);
 }
 
 .card3 {
-  background-image: url(../assets/pic-3.png);
+  background-image: url(../assets/guGong.jpg);
 }
 
 .card4 {
-  background-image: url(../assets/pic-4.png);
+  background-image: url(../assets/guoMao.jpeg);
 }
 
 .card:hover {

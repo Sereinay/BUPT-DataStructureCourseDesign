@@ -14,8 +14,8 @@
       </div>
     </header>
     <section class="home">
-      <video class="video-slide active" src="../assets/home.mp4" autoplay muted loop></video>
-      <video class="video-slide" src="../assets/home2.mp4" autoplay muted loop></video>
+      <video class="video-slide active" src="../assets/demo02.mp4" autoplay muted loop></video>
+      <video class="video-slide" src="../assets/demo01.mp4" autoplay muted loop></video>
 
       <div class="content active">
         <h1>朝.<br><span>游碧海而暮苍梧</span></h1>
