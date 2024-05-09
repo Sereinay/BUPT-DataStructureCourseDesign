@@ -1,14 +1,45 @@
+<script setup>
+import {ref} from 'vue'
+
+const input = ref('')
+const tableData = [
+  {
+    name: "长城",
+    rate: "5",
+    type: "景点",
+    desc: "长城是中国古代建筑的杰作，是世界上最著名的防御工程之一，"
+  },
+  {
+    name: "天坛",
+    rate: "4",
+    type: "景点",
+    desc: "天坛位于北京市，是明清两代帝王祭祀天地之所，是中国古代建筑艺术的典范之一，"
+  },
+  {
+    name: "故宫",
+    rate: "5",
+    type: "景点",
+    desc: "是中国明清两代的皇家宫殿，也是世界上最大、保存最完整的古代木质结构建筑群之一，"
+  },
+  {
+    name: "国贸",
+    rate: "4",
+    type: "景点",
+    desc: "是北京市最重要的商务和金融中心之一。包括中国尊、国贸大厦等高层建筑，"
+  }
+]
+</script>
 <template>
   <div class="container">
     <div class="navbar">
-      <img src="../assets/logo.png" class="logo" />
+      <img src="../assets/logo.png" class="logo"/>
       <nav>
         <ul>
           <li><a href="/WelcomeHost">首页</a></li>
           <li><a @click="logout">退出</a></li>
         </ul>
       </nav>
-      <img src="../assets/menu.png" class="menu-icon" />
+      <img src="../assets/menu.png" class="menu-icon"/>
     </div>
     <div class="row">
       <div class="col">
@@ -19,21 +50,41 @@
         <button type="button">探索</button>
       </div>
       <div class="col">
+        <div>
+          <el-input @mouseover="showOverlay = true" @input="showOverlay = true" style="margin-bottom: 5px;width: 90%;"
+                    v-model="input" clearable placeholder="您要去哪里">
+            <template #append>
+              <el-button style="color: black;width: 60px" :icon="Search"/>
+            </template>
+          </el-input>
+        </div>
+        <div v-if="showOverlay" class="overlay" style="z-index: 9999">
+          <el-table :data="tableData" stripe style="width: 90%;border-radius: 10px;">
+            <el-table-column prop="name" label="名称" width="80"/>
+            <el-table-column prop="rate" label="评分" width="60"/>
+            <el-table-column prop="type" label="类型" width="80"/>
+            <el-table-column prop="desc" label="简介"/>
+          </el-table>
+        </div>
         <div class="card card1">
           <h5>长城</h5>
-          <p>长城是中国古代建筑的杰作，是世界上最著名的防御工程之一，也是中国的标志性建筑之一，以其雄伟壮丽的气势吸引着无数游客和历史爱好者。</p>
+          <p>
+            长城是中国古代建筑的杰作，是世界上最著名的防御工程之一，也是中国的标志性建筑之一，以其雄伟壮丽的气势吸引着无数游客和历史爱好者。</p>
         </div>
         <div class="card card2">
           <h5>天坛</h5>
-          <p>天坛位于北京市，是明清两代帝王祭祀天地之所，是中国古代建筑艺术的典范之一，也是世界文化遗产。其建筑规划、设计精巧，</p>
+          <p>
+            天坛位于北京市，是明清两代帝王祭祀天地之所，是中国古代建筑艺术的典范之一，也是世界文化遗产。其建筑规划、设计精巧，</p>
         </div>
         <div class="card card3">
           <h5>故宫</h5>
-          <p>是中国明清两代的皇家宫殿，也是世界上最大、保存最完整的古代木质结构建筑群之一，其建筑风格庄严典雅，是中国古代建筑的杰作，吸引着大量游客和历史爱好者前来参观。</p>
+          <p>
+            是中国明清两代的皇家宫殿，也是世界上最大、保存最完整的古代木质结构建筑群之一，其建筑风格庄严典雅，是中国古代建筑的杰作，吸引着大量游客和历史爱好者前来参观。</p>
         </div>
         <div class="card card4">
           <h5>国贸</h5>
-          <p>是北京市最重要的商务和金融中心之一。包括中国尊、国贸大厦等高层建筑，是北京市标志性建筑之一，也是国内外企业总部和高端商务办公区的集聚地。</p>
+          <p>
+            是北京市最重要的商务和金融中心之一。包括中国尊、国贸大厦等高层建筑，是北京市标志性建筑之一，也是国内外企业总部和高端商务办公区的集聚地。</p>
         </div>
       </div>
     </div>
@@ -44,16 +95,29 @@
 
 import {logout} from "@/net/index.js";
 import router from "@/router/index.js";
+import {Search} from "@element-plus/icons-vue";
 
 export default {
   name: 'TravelLanding',
-  methods:{
-    logout(){
-      logout(()=>{
+  data() {
+    return {
+      searchKeyword: '', // 用户输入的搜索关键词
+      showOverlay: false // 控制覆盖层显示状态
+    };
+  },
+  computed: {
+    Search() {
+      return Search
+    }
+  },
+  methods: {
+    logout() {
+      logout(() => {
         router.push('/')
       })
     }
-}}
+  }
+}
 </script>
 
 <style scoped>
