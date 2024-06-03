@@ -2,18 +2,16 @@ package com.example.service.impl;
 
 import com.example.entity.dto.Place;
 import jakarta.annotation.Resource;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.parameters.P;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -167,6 +165,7 @@ class PlaceServiceImplTest {
         assertFalse(placeList.isEmpty(), "结果列表不应为空");
         placeList.forEach(System.out::println);
     }
+
 
 
 }
