@@ -252,6 +252,7 @@ section {
   padding-left: 8%;
   padding-right: 8%;
   box-sizing: border-box;
+  display: flex;
 }
 
 nav {
@@ -307,7 +308,7 @@ nav ul li a {
 
 h1 {
   color: #fff;
-  font-size: 100px;
+  font-size: 70px;
 }
 
 p {

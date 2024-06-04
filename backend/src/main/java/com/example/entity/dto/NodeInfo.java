@@ -12,7 +12,7 @@ public class NodeInfo {
     Integer nodeInfoId;
     Integer source;
     Integer destination;
-    double length;
-    double speed;
-    double congestion;
+    Double length;
+    Double speed;
+    Double congestion;
 }

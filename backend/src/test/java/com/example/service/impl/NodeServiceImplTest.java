@@ -21,6 +21,17 @@ class NodeServiceImplTest {
     NodeServiceImpl nodeService;
 
 
+    @Test
+    public void testFindNodeByIdWithDemo() {
+        System.out.println("测试Demo");
+        List<Node> nodes = nodeService.findNodeById(Arrays.asList(new  Integer[]{73, 1, 14, 47}));
+        if (nodes == null || nodes.isEmpty()) System.out.println("没有找到！");
+        else {
+            System.out.println("找到的节点为：");
+            nodes.forEach(System.out::println);
+        }
+    }
+
     /**
      * 测试空列表
      */

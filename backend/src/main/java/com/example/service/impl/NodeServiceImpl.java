@@ -9,16 +9,30 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class NodeServiceImpl extends ServiceImpl<NodeMapper, Node> implements NodeService {
 
     @Resource
     private NodeMapper nodeMapper;
-    @Override
-    public List<Node> findNodeById(List<Integer> list) {
-        if (list.isEmpty()) return new ArrayList<>();
-        return nodeMapper.selectBatchIds(list);
-    }
 
+    @Override
+    public List<Node> findNodeById(List<Integer> idList) {
+        if (idList.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // 执行查询
+        List<Node> nodes = nodeMapper.selectBatchIds(idList);
+
+        // 根据传入的ID列表顺序对查询结果进行排序
+        return idList.stream()
+                .map(id -> nodes.stream()
+                        .filter(node -> node.getNodeId().equals(id))
+                        .findFirst()
+                        .orElse(null))
+                .filter(node -> node != null)
+                .collect(Collectors.toList());
+    }
 }

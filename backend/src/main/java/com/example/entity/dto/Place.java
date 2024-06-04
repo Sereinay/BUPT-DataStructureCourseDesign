@@ -12,10 +12,10 @@ import lombok.Data;
 @AllArgsConstructor
 public class Place {
     @TableId(value = "placeId",type = IdType.AUTO)
-    int placeId;
+    Integer placeId;
     @TableField(value = "placeName")
     String placeName;
     String information;
     String type;
-    double rating;
+    Double rating;
 }

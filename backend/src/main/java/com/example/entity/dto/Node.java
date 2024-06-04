@@ -12,11 +12,11 @@ import lombok.Data;
 @AllArgsConstructor
 public class Node {
     @TableId(value = "nodeId", type = IdType.AUTO)
-    int nodeId;
+    Integer nodeId;
     @TableField(value = "placeType")
     String placeType;
     @TableField(value = "xPosition")
-    double xPosition;
+    Double xPosition;
     @TableField(value = "yPosition")
-    double yPosition;
+    Double yPosition;
 }

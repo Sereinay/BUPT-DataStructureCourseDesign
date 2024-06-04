@@ -58,10 +58,15 @@ public class NodeNavigateImpl extends ServiceImpl<NodeInfoMapper, NodeInfo> impl
         // 构建图结构
         Map<Integer, List<NodeInfo>> graph = buildGraph(nodeInfos);
 
-        // 根据type选择计算最短路径或最短时间路径
-        return type.equals("short") ?
-                findShortestPathByLength(graph, source, destination) :
-                findShortestPathByTime(graph, source, destination);
+
+        // 根据type计算路径
+        if (type.equals("short")) {
+            return findShortestPathByLength(graph, source, destination);
+        } else if (type.equals("time")) {
+            return findShortestPathByTime(graph, source, destination);
+        } else {
+            return Collections.emptyList(); // 无效的类型，返回空列表
+        }
     }
 
     // 构建图结构，使用邻接表表示
