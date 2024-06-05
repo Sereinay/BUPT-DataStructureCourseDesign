@@ -1,7 +1,10 @@
 package com.example.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.entity.dto.Node;
 import com.example.entity.dto.NodeInfo;
+import com.example.entity.dto.NodeRelative;
 import com.example.mapper.NodeInfoMapper;
 import com.example.service.NodeNavigateService;
 import jakarta.annotation.Resource;
@@ -10,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.function.ToDoubleFunction;
+import java.util.stream.Collectors;
 
 @Service
 public class NodeNavigateImpl extends ServiceImpl<NodeInfoMapper, NodeInfo> implements NodeNavigateService {
@@ -187,6 +191,56 @@ public class NodeNavigateImpl extends ServiceImpl<NodeInfoMapper, NodeInfo> impl
         }
     }
 
+    @Override
+    public List<NodeRelative> findRelativeNodeWithLength(String placeTypeAndNodeId) {
+        List<NodeRelative> nodeRelatives = new ArrayList<>();
+
+        // 获取字符串的最后两位数字
+        int nodeId = Integer.parseInt(placeTypeAndNodeId.substring(placeTypeAndNodeId.length() - 2));
+
+        // 在 nodeInfo 表中查找 source 或 destination 字段匹配的记录
+        QueryWrapper<NodeInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("source", nodeId).or().eq("destination", nodeId);
+        List<NodeInfo> nodeInfos = nodeInfoMapper.selectList(queryWrapper);
+
+        // 构建返回的 NodeRelative 列表
+        for (NodeInfo nodeInfo : nodeInfos) {
+            NodeRelative nodeRelative = new NodeRelative();
+            if (nodeInfo.getSource().equals(nodeId)) {
+                nodeRelative.setNodeId(nodeInfo.getDestination());
+            } else {
+                nodeRelative.setNodeId(nodeInfo.getSource());
+            }
+            nodeRelative.setLength(nodeInfo.getLength().intValue());
+            nodeRelative.setPlaceType(getPlaceType(nodeRelative.getNodeId()));
+
+            nodeRelatives.add(nodeRelative);
+        }
+
+        return nodeRelatives;
+    }
+
+    @Override
+    public List<NodeRelative> selectNodeRelative(List<NodeRelative> nodeRelatives, String placeType) {
+        if ("All".equalsIgnoreCase(placeType)) {
+            return nodeRelatives;
+        }
+        return nodeRelatives.stream()
+                .filter(nodeRelative -> placeType.equalsIgnoreCase(nodeRelative.getPlaceType()))
+                .collect(Collectors.toList());
+    }
+
+    private String getPlaceType(int nodeId) {
+        if (nodeId >= 0 && nodeId <= 19) {
+            return "Building";
+        } else if (nodeId >= 20 && nodeId <= 69) {
+            return "Service";
+        } else if (nodeId >= 70 && nodeId <= 99) {
+            return "Intersection";
+        } else {
+            return "Unknown"; // 处理可能的其他范围情况
+        }
+    }
 
     // 构建图结构，使用邻接表表示
     private Map<Integer, List<NodeInfo>> buildGraphForSome(List<NodeInfo> nodeInfos) {

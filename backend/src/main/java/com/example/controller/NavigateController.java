@@ -2,13 +2,11 @@ package com.example.controller;
 
 import com.example.entity.RestBean;
 import com.example.entity.dto.Node;
+import com.example.entity.dto.NodeRelative;
 import com.example.service.NodeNavigateService;
 import com.example.service.NodeService;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -42,5 +40,27 @@ public class NavigateController {
         }
         List<Node> nodes = nodeService.findNodeById(nodeIds);
         return RestBean.success(nodes);
+    }
+
+
+    @GetMapping("/placeType")
+    public RestBean<List<Node>> getNodesByPlaceType(@RequestParam("placeType") String placeType) {
+        // 调用 findNodeByPlaceType 方法
+        List<Node> nodes = nodeService.findNodeByPlaceType(placeType);
+
+        return RestBean.success(nodes);
+    }
+
+
+    @GetMapping("/nodeRelatives")
+    public RestBean<List<NodeRelative>> getNodeRelatives(
+            @RequestParam("placeTypeAndNodeId") String placeTypeAndNodeId,
+            @RequestParam("placeType") String placeType) {
+        // 调用 findRelativeNodeWithLength 方法
+        List<NodeRelative> nodeRelatives = nodeNavigateService.findRelativeNodeWithLength(placeTypeAndNodeId);
+
+        // 根据 placeType 调用 selectNodeRelative 方法
+        List<NodeRelative> filteredNodeRelatives = nodeNavigateService.selectNodeRelative(nodeRelatives, placeType);
+        return RestBean.success(filteredNodeRelatives);
     }
 }

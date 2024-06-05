@@ -40,6 +40,11 @@ const router = createRouter({
             path: '/WelcomeHost',
             name: 'welcome-host',
             component: () => import('@/components/WelcomeHost.vue')
+        },
+        {
+            path: '/NodeRelative',
+            name: 'Node-Relative',
+            component: () => import('@/components/NodeRelative.vue')
         }
     ]
 })

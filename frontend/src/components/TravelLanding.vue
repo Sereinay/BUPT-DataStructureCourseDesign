@@ -103,17 +103,19 @@ const handleRowClick = (row) => {
       <div class="col">
         <h1>{{ selectedPlace.placeName }}</h1>
         <p>{{ selectedPlace.information }}</p>
-        <button type="button">探索</button>
+        <button type="button" @click="toRelative">探索</button>
       </div>
       <div class="col">
         <div class="fixed-header" style="background: transparent">
-          <el-input @input="showOverlay = true" style="margin-bottom: 5px;margin-top: 30px;width: 70%;" v-model="input" clearable
+          <el-input @input="showOverlay = true" style="margin-bottom: 5px;margin-top: 30px;width: 70%;" v-model="input"
+                    clearable
                     placeholder="您要去哪里">
             <template #append>
               <el-button style="color: black;width: 60px" @click="searchPlaces" :icon="Search"/>
             </template>
           </el-input>
-          <el-select v-model="searchType" placeholder="选择搜索类型" style="width: 20%; margin-top: 30px;margin-left: 10px;">
+          <el-select v-model="searchType" placeholder="选择搜索类型"
+                     style="width: 20%; margin-top: 30px;margin-left: 10px;">
             <el-option label="名称" value="name"></el-option>
             <el-option label="信息" value="info"></el-option>
           </el-select>
@@ -126,22 +128,22 @@ const handleRowClick = (row) => {
             <el-table-column prop="information" label="简介"/>
           </el-table>
         </div>
-        <div class="card card1">
+        <div class="card card1" @click="toRelative">
           <h5>长城</h5>
           <p>
             长城是中国古代建筑的杰作，是世界上最著名的防御工程之一，也是中国的标志性建筑之一，以其雄伟壮丽的气势吸引着无数游客和历史爱好者。</p>
         </div>
-        <div class="card card2">
+        <div class="card card2" @click="toRelative">
           <h5>天坛</h5>
           <p>
             天坛位于北京市，是明清两代帝王祭祀天地之所，是中国古代建筑艺术的典范之一，也是世界文化遗产。其建筑规划、设计精巧，</p>
         </div>
-        <div class="card card3">
+        <div class="card card3" @click="toRelative">
           <h5>故宫</h5>
           <p>
             是中国明清两代的皇家宫殿，也是世界上最大、保存最完整的古代木质结构建筑群之一，其建筑风格庄严典雅，是中国古代建筑的杰作，吸引着大量游客和历史爱好者前来参观。</p>
         </div>
-        <div class="card card4">
+        <div class="card card4" @click="toRelative">
           <h5>国贸</h5>
           <p>
             是北京市最重要的商务和金融中心之一。包括中国尊、国贸大厦等高层建筑，是北京市标志性建筑之一，也是国内外企业总部和高端商务办公区的集聚地。</p>
@@ -174,6 +176,9 @@ export default {
       logout(() => {
         router.push('/')
       })
+    },
+    toRelative(){
+      router.push('/NodeRelative')
     }
   }
 }

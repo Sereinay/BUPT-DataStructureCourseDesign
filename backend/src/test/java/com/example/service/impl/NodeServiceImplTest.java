@@ -131,17 +131,62 @@ class NodeServiceImplTest {
     }
 
     /**
-     * 测试包含负数ID的列表
+     * 测试placeType为All
      */
     @Test
-    public void testFindNodeByIdWithNegativeIds() {
-        System.out.println("测试包含负数ID的列表");
-        List<Node> nodes = nodeService.findNodeById(Arrays.asList(-1));
-        if (nodes == null || nodes.isEmpty()) System.out.println("没有找到！");
-        else {
+    public void testFindNodeByPlaceTypeAll() {
+        System.out.println("测试placeType为All");
+        List<Node> nodes = nodeService.findNodeByPlaceType("All");
+        if (nodes == null || nodes.isEmpty()) {
+            System.out.println("没有找到！");
+        } else {
             System.out.println("找到的节点为：");
             nodes.forEach(System.out::println);
         }
     }
 
+    /**
+     * 测试placeType为Service
+     */
+    @Test
+    public void testFindNodeByPlaceTypeService() {
+        System.out.println("测试placeType为Service");
+        List<Node> nodes = nodeService.findNodeByPlaceType("Service");
+        if (nodes == null || nodes.isEmpty()) {
+            System.out.println("没有找到！");
+        } else {
+            System.out.println("找到的节点为：");
+            nodes.forEach(System.out::println);
+        }
+    }
+
+    /**
+     * 测试placeType为Building
+     */
+    @Test
+    public void testFindNodeByPlaceTypeBuilding() {
+        System.out.println("测试placeType为Building");
+        List<Node> nodes = nodeService.findNodeByPlaceType("Building");
+        if (nodes == null || nodes.isEmpty()) {
+            System.out.println("没有找到！");
+        } else {
+            System.out.println("找到的节点为：");
+            nodes.forEach(System.out::println);
+        }
+    }
+
+    /**
+     * 测试placeType为Intersection
+     */
+    @Test
+    public void testFindNodeByPlaceTypeIntersection() {
+        System.out.println("测试placeType为Intersection");
+        List<Node> nodes = nodeService.findNodeByPlaceType("Intersection");
+        if (nodes == null || nodes.isEmpty()) {
+            System.out.println("没有找到！");
+        } else {
+            System.out.println("找到的节点为：");
+            nodes.forEach(System.out::println);
+        }
+    }
 }

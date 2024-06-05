@@ -1,5 +1,6 @@
 package com.example.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.entity.dto.Node;
 import com.example.mapper.NodeMapper;
@@ -34,5 +35,14 @@ public class NodeServiceImpl extends ServiceImpl<NodeMapper, Node> implements No
                         .orElse(null))
                 .filter(node -> node != null)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Node> findNodeByPlaceType(String placeType) {
+        QueryWrapper<Node> queryWrapper = new QueryWrapper<>();
+        if (!"All".equalsIgnoreCase(placeType)) {
+            queryWrapper.eq("placeType", placeType);
+        }
+        return this.list(queryWrapper);
     }
 }

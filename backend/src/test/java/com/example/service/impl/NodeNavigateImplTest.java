@@ -1,5 +1,7 @@
 package com.example.service.impl;
 
+import com.example.entity.dto.NodeRelative;
+import com.example.service.NodeService;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +27,7 @@ class NodeNavigateImplTest {
     }
 
     @Test
-    void testDemo(){
+    void testDemo() {
         List<Integer> list = nodeNavigate.findShortestPathWithSome("dfd73 jdj47 jdjd36", typeShort);
         System.out.println(list);
     }
@@ -487,4 +489,107 @@ class NodeNavigateImplTest {
         List<Integer> list = nodeNavigate.findShortestPathWithSome("start01 start01", "time");
         if (list != null) System.out.println("最短路径为：" + list);
     }
+
+
+    /**
+     * 测试placeTypeAndNodeId字符串为Service19
+     */
+    @Test
+    void testFindRelativeNodeWithLength_Service19() {
+        System.out.println("测试placeTypeAndNodeId字符串为Service19");
+        List<NodeRelative> nodeRelatives = nodeNavigate.findRelativeNodeWithLength("Service19");
+        assertNotNull(nodeRelatives, "结果不应为空");
+        assertFalse(nodeRelatives.isEmpty(), "结果不应为空列表");
+        nodeRelatives.forEach(System.out::println);
+    }
+
+    /**
+     * 测试placeTypeAndNodeId字符串为Building05
+     */
+    @Test
+    void testFindRelativeNodeWithLength_Building05() {
+        System.out.println("测试placeTypeAndNodeId字符串为Building05");
+        List<NodeRelative> nodeRelatives = nodeNavigate.findRelativeNodeWithLength("Building05");
+        assertNotNull(nodeRelatives, "结果不应为空");
+        assertFalse(nodeRelatives.isEmpty(), "结果不应为空列表");
+        nodeRelatives.forEach(System.out::println);
+    }
+
+    /**
+     * 测试placeTypeAndNodeId字符串为Intersection75
+     */
+    @Test
+    void testFindRelativeNodeWithLength_Intersection75() {
+        System.out.println("测试placeTypeAndNodeId字符串为Intersection75");
+        List<NodeRelative> nodeRelatives = nodeNavigate.findRelativeNodeWithLength("Intersection75");
+        assertNotNull(nodeRelatives, "结果不应为空");
+        assertFalse(nodeRelatives.isEmpty(), "结果不应为空列表");
+        nodeRelatives.forEach(System.out::println);
+    }
+
+    /**
+     * 测试placeTypeAndNodeId字符串为未知节点
+     */
+    @Test
+    void testFindRelativeNodeWithLength_UnknownNode() {
+        System.out.println("测试placeTypeAndNodeId字符串为未知节点");
+        List<NodeRelative> nodeRelatives = nodeNavigate.findRelativeNodeWithLength("Unknown99");
+        assertNotNull(nodeRelatives, "结果不应为空");
+        nodeRelatives.forEach(System.out::println);
+    }
+
+
+    /**
+     * 测试placeType为All
+     */
+    @Test
+    void testSelectNodeRelative_All() {
+        List<NodeRelative> nodeRelatives = nodeNavigate.findRelativeNodeWithLength("Building05");
+        System.out.println("测试placeType为All");
+        List<NodeRelative> result = nodeNavigate.selectNodeRelative(nodeRelatives, "All");
+        assertNotNull(result, "结果不应为空");
+        assertEquals(nodeRelatives.size(), result.size(), "结果大小应与输入列表相同");
+        result.forEach(System.out::println);
+    }
+
+    /**
+     * 测试placeType为Service
+     */
+    @Test
+    void testSelectNodeRelative_Service() {
+        System.out.println("测试placeType为Service");
+        List<NodeRelative> nodeRelatives = nodeNavigate.findRelativeNodeWithLength("Building05");
+        List<NodeRelative> result = nodeNavigate.selectNodeRelative(nodeRelatives, "Service");
+        assertNotNull(result, "结果不应为空");
+        result.forEach(node -> assertEquals("Service", node.getPlaceType(), "所有元素的placeType应为Service"));
+        result.forEach(System.out::println);
+    }
+
+    /**
+     * 测试placeType为Building
+     */
+    @Test
+    void testSelectNodeRelative_Building() {
+        System.out.println("测试placeType为Building");
+        List<NodeRelative> nodeRelatives = nodeNavigate.findRelativeNodeWithLength("Building05");
+        List<NodeRelative> result = nodeNavigate.selectNodeRelative(nodeRelatives, "Building");
+        assertNotNull(result, "结果不应为空");
+        result.forEach(node -> assertEquals("Building", node.getPlaceType(), "所有元素的placeType应为Building"));
+        result.forEach(System.out::println);
+    }
+
+    /**
+     * 测试placeType为Intersection
+     */
+    @Test
+    void testSelectNodeRelative_Intersection() {
+        System.out.println("测试placeType为Intersection");
+        List<NodeRelative> nodeRelatives = nodeNavigate.findRelativeNodeWithLength("Building05");
+        List<NodeRelative> result = nodeNavigate.selectNodeRelative(nodeRelatives, "Intersection");
+        assertNotNull(result, "结果不应为空");
+        result.forEach(node -> assertEquals("Intersection", node.getPlaceType(), "所有元素的placeType应为Intersection"));
+        result.forEach(System.out::println);
+    }
+
+
 }
