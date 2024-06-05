@@ -8,14 +8,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@TableName("place")
+@TableName("node")
 @AllArgsConstructor
-public class Place {
-    @TableId(value = "placeId",type = IdType.AUTO)
-    Integer placeId;
-    @TableField(value = "placeName")
-    String placeName;
-    String information;
-    String type;
-    Double rating;
+public class Node {
+    @TableId(value = "nodeId", type = IdType.AUTO)
+    Integer nodeId;
+    @TableField(value = "placeType")
+    String placeType;
+    @TableField(value = "xPosition")
+    Double xPosition;
+    @TableField(value = "yPosition")
+    Double yPosition;
 }
