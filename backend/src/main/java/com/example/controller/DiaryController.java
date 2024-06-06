@@ -20,15 +20,23 @@ public class DiaryController {
     private DiaryService diaryService;
 
     @PostMapping("/create")
-    public RestBean<String> createDiary(@RequestBody Diary diary, @RequestParam DiaryStatusEnum status) {
-        String result = diaryService.createDiary(diary, status);
+    public RestBean<String> createDiary(
+            @RequestParam String title,
+            @RequestParam String content,
+            @RequestParam String studentName,
+            @RequestParam String siteName,
+            @RequestParam DiaryStatusEnum status) {
+        String result = diaryService.createDiary(title, content, studentName, siteName, status);
         return RestBean.success(result);
     }
 
     @PutMapping("/update")
-    public RestBean<String> updateDiary(@RequestParam Long id, @RequestBody Diary diary, @RequestParam String studentName) throws JsonProcessingException {
-        diary.setId(id);
-        String result = diaryService.updateDiary(diary, studentName);
+    public RestBean<String> updateDiary(
+            @RequestParam Long id,
+            @RequestParam String title,
+            @RequestParam String content,
+            @RequestParam String studentName) throws JsonProcessingException {
+        String result = diaryService.updateDiary(title, content, studentName, id);
         return RestBean.success(result);
     }
 
@@ -60,10 +68,12 @@ public class DiaryController {
     public RestBean<IPage<Diary>> findDiaryByTitleAndSite(
             @RequestParam String title,
             @RequestParam String siteName,
+            @RequestParam String studentName,
             @RequestParam SortOption sortOption,
             @RequestParam int page,
-            @RequestParam int size) {
-        IPage<Diary> diaries = diaryService.findDiaryByTitleAndSite(title, siteName, sortOption, page, size);
+            @RequestParam int size,
+            @RequestParam boolean isPublished) {
+        IPage<Diary> diaries = diaryService.findDiaryByTitleAndSite(title, siteName, studentName, sortOption, page, size,isPublished);
         return RestBean.success(diaries);
     }
 }
