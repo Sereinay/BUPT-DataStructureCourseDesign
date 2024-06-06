@@ -121,17 +121,10 @@ export default {
       createDialogVisible: false,
       newDiary: {
         title: '',
-        siteName: '',
         content: '',
-        status: '',
-        createTime: '',
-        updateTime: '',
         studentName: localStorage.getItem("username"),
-        rating: '',
-        popularity: '',
-        code: '',
-        rateNum: '',
-        padding: ''
+        siteName: '',
+        status: '',
       }
     };
   },
@@ -197,11 +190,19 @@ export default {
         console.error("Token not found");
         return;
       }
-      const diary = { ...this.newDiary, status };
-      axios.post('/api/diary/create', {diary}, {
+      const params = new URLSearchParams();
+      params.append('title', this.newDiary.title);
+      params.append('content', this.newDiary.content);
+      params.append('studentName', this.getStudentName());
+      params.append('siteName', this.newDiary.siteName);
+      params.append('status', status);
+
+      axios.post('/api/diary/create', params, {
         headers: {
-          Authorization: `Bearer ${token}`,
-        }})
+          'Content-Type': 'application/x-www-form-urlencoded', // 确保正确的 Content-Type
+          'Authorization': `Bearer ${token}`,
+        }
+      })
           .then(() => {
             this.createDialogVisible = false;
             this.fetchDiaries(this.viewOwnDiaries ? `/api/diary/student?studentName=${this.getStudentName()}` : '/api/diaries/search');

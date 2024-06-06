@@ -9,11 +9,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 
 public interface DiaryService {
-    String createDiary(Diary diary, DiaryStatusEnum status);
-    String updateDiary(Diary diary, String studentName) throws JsonProcessingException;
+    String createDiary(String title, String content, String studentName,String siteName, DiaryStatusEnum status);
+    String updateDiary(String title, String content, String studentName,Long diaryId) throws JsonProcessingException;
     boolean deleteDiary(Long id, String studentName);
     List<Diary> getDiariesByStudentName(String studentName);
     Diary getDiary(Long diaryId);
     boolean rateDiary(Long diaryId, double score);
-    IPage<Diary> findDiaryByTitleAndSite(String title, String siteName, SortOption sortOption, int page, int size);
+    IPage<Diary> findDiaryByTitleAndSite(String title, String siteName, String studentName,SortOption sortOption, int page, int size, Boolean isPublished);
 }

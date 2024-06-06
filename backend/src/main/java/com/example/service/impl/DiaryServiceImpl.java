@@ -16,7 +16,6 @@ import com.example.utils.HuffmanUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.HashMap;
@@ -32,19 +31,22 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryMapper, Diary> implements
     private CustomSortUtil customSort;
 
     @Override
-    public String createDiary(Diary diary, DiaryStatusEnum status) {
+    public String createDiary(String title, String content,String studentName, String siteName, DiaryStatusEnum status) {
         try {
+            Diary diary = new Diary();
+            diary.setTitle(title);
+            diary.setContent(content);
+            diary.setSiteName(siteName);
+            diary.setStudentName(studentName);
             diary.setCreateTime(LocalDateTime.now());
             diary.setUpdateTime(LocalDateTime.now());
             diary.setStatus(status);
             // 压缩内容
             compressContent(diary);
             // 插入日记
-            if(status == DiaryStatusEnum.PUBLISHED){
-                diary.setRating((double) 0);
-                diary.setRateNum(0);
-                diary.setPopularity(0);
-            }
+            diary.setRating((double) 0);
+            diary.setRateNum(0);
+            diary.setPopularity(0);
             diaryMapper.insert(diary);
             return "日记创建成功！";
         } catch (Exception e) {
@@ -53,11 +55,14 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryMapper, Diary> implements
     }
 
     @Override
-    public String updateDiary(Diary diary, String studentName){
+    public String updateDiary(String title, String content, String studentName,Long diaryId){
         try {
+            Diary diary = getById(diaryId);
             if (!diary.getStudentName().equals(studentName)) {
                 return "只能修改自己的日记！！";
             }
+            diary.setTitle(title);
+            diary.setContent(content);
             diary.setUpdateTime(LocalDateTime.now());
             // 压缩内容
             compressContent(diary);
@@ -103,8 +108,10 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryMapper, Diary> implements
     public Diary getDiary(Long diaryId) {
         try {
             Diary diary = getById(diaryId);
-            diary.setPopularity(diary.getPopularity() + 10);
-            diaryMapper.updateById(diary);
+            if(diary.getStatus() == DiaryStatusEnum.PUBLISHED){
+                diary.setPopularity(diary.getPopularity() + 10);
+                diaryMapper.updateById(diary);
+            }
             diary.setContent(decompressContent(diary));
             return diary;
         } catch (Exception e) {
@@ -113,7 +120,7 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryMapper, Diary> implements
     }
 
     @Override
-    public IPage<Diary> findDiaryByTitleAndSite(String title, String siteName, SortOption sortOption, int page, int size) {
+    public IPage<Diary> findDiaryByTitleAndSite(String title, String siteName, String studentName,SortOption sortOption, int page, int size, Boolean isPublished) {
         QueryWrapper<Diary> queryWrapper = new QueryWrapper<>();
 
         // 判断siteName是否为空，若为空则不限制siteName
@@ -126,9 +133,12 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryMapper, Diary> implements
             queryWrapper.like("title", title);
         }
 
-        // 仅返回已发布的日记
-        queryWrapper.eq("status", DiaryStatusEnum.PUBLISHED);
-
+        // 仅返回所有人已发布的日记
+        if(isPublished) {
+            queryWrapper.eq("status", DiaryStatusEnum.PUBLISHED);
+        } else{
+            queryWrapper.eq("studentName",studentName);
+        }
         // 分页功能
         Page<Diary> pageObj = new Page<>(page, size);
         IPage<Diary> diaryPage = diaryMapper.selectPage(pageObj, queryWrapper);
@@ -143,7 +153,7 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryMapper, Diary> implements
         return diaryPage;
     }
 
-    private void compressContent(Diary diary) throws IOException {
+    private void compressContent(Diary diary) {
         Map<String, Object> compressedData = HuffmanUtil.compress(diary.getContent());
         byte[] encodedBytes = (byte[]) compressedData.get("encodedBytes");
         String encodedText = Base64.getEncoder().encodeToString(encodedBytes);
@@ -156,7 +166,7 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryMapper, Diary> implements
         diary.setPadding(padding);  // 保存 padding 信息
     }
 
-    public String decompressContent(Diary diary) throws IOException {
+    public String decompressContent(Diary diary) {
         String encodedText = diary.getContent();
         byte[] encodedBytes = Base64.getDecoder().decode(encodedText);
         int padding = diary.getPadding();  // 获取 padding 参数
