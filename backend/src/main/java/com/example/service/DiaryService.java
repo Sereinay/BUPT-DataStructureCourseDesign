@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface DiaryService {
     String createDiary(String title, String content, String studentName,String siteName, DiaryStatusEnum status);
-    String updateDiary(String title, String content, String studentName,Long diaryId) throws JsonProcessingException;
+    String updateDiary(String title, String content, DiaryStatusEnum status,String studentName,Long diaryId) throws JsonProcessingException;
     boolean deleteDiary(Long id, String studentName);
     List<Diary> getDiariesByStudentName(String studentName);
     Diary getDiary(Long diaryId);

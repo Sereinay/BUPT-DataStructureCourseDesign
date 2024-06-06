@@ -55,7 +55,7 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryMapper, Diary> implements
     }
 
     @Override
-    public String updateDiary(String title, String content, String studentName,Long diaryId){
+    public String updateDiary(String title, String content, DiaryStatusEnum status,String studentName,Long diaryId){
         try {
             Diary diary = getById(diaryId);
             if (!diary.getStudentName().equals(studentName)) {
@@ -63,6 +63,7 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryMapper, Diary> implements
             }
             diary.setTitle(title);
             diary.setContent(content);
+            diary.setStatus(status);
             diary.setUpdateTime(LocalDateTime.now());
             // 压缩内容
             compressContent(diary);
@@ -140,7 +141,7 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryMapper, Diary> implements
             queryWrapper.eq("studentName",studentName);
         }
         // 分页功能
-        Page<Diary> pageObj = new Page<>(page, size);
+        IPage<Diary> pageObj = new Page<>(page, size);
         IPage<Diary> diaryPage = diaryMapper.selectPage(pageObj, queryWrapper);
 
         // 自定义排序
@@ -150,7 +151,7 @@ public class DiaryServiceImpl extends ServiceImpl<DiaryMapper, Diary> implements
         // 将排序后的结果重新设置到分页对象中
         pageObj.setRecords(diaries);
 
-        return diaryPage;
+        return pageObj;
     }
 
     private void compressContent(Diary diary) {

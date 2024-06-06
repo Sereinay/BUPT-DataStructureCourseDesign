@@ -22,9 +22,20 @@
           </el-menu>
         </el-aside>
         <el-main style="position: absolute; left: 200px; right: 0; top: 60px; bottom: 0; overflow-y: scroll;">
+          <div class="search-bar">
+            <el-input v-model="searchQuery" placeholder="搜索日记" clearable @clear="fetchDiaries"></el-input>
+            <el-autocomplete
+                v-model="searchPlace"
+                :fetch-suggestions="querySearch"
+                placeholder="请输入地点">
+            </el-autocomplete>
+            <el-radio-group v-model="sortOption">
+              <el-radio label="POPULARITY" @click = "sortOption = 'POPULARITY'">按热度</el-radio>
+              <el-radio label="RATING" @click = "sortOption = 'RATING'">按评分</el-radio>
+            </el-radio-group>
+            <el-button type="primary" @click="searchDiaries(searchQuery,searchPlace,sortOption)">搜索</el-button>
+          </div>
           <el-button v-if="viewOwnDiaries" type="primary" @click="createDialogVisible = true">创建日记</el-button>
-          <el-input v-model="searchQuery" placeholder="搜索日记" clearable @clear="fetchDiaries"></el-input>
-          <el-button type="primary" @click="searchDiaries">搜索</el-button>
           <el-table :data="diaries" style="width: 100%">
             <el-table-column prop="title" label="标题"></el-table-column>
             <el-table-column prop="siteName" label="景点名称"></el-table-column>
@@ -32,7 +43,7 @@
             <el-table-column v-if="viewOwnDiaries" label="操作">
               <template v-slot:default="scope">
                 <el-button size="small" @click="viewDiary(scope.row.id)">查看</el-button>
-                <el-button size="small" @click="editDiary(scope.row.id)">编辑</el-button>
+                <el-button size="small" @click="openEditDiary(scope.row.id)">编辑</el-button>
                 <el-button size="small" type="danger" @click="deleteDiary(scope.row.id)">删除</el-button>
               </template>
             </el-table-column>
@@ -53,17 +64,66 @@
           <el-input v-model="newDiary.title"></el-input>
         </el-form-item>
         <el-form-item label="景点名称">
-          <el-input v-model="newDiary.siteName"></el-input>
+          <el-autocomplete
+              v-model="newDiary.siteName"
+              :fetch-suggestions="querySearch"
+              placeholder="请输入地点">
+          </el-autocomplete>
         </el-form-item>
         <el-form-item label="日记内容">
           <el-input type="textarea" v-model="newDiary.content"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="createDialogVisible = false">取消</el-button>
+        <el-button @click="createDialogVisible = false;">取消</el-button>
         <el-button type="primary" @click="saveDiary('DRAFT')">保存为草稿</el-button>
         <el-button type="success" @click="saveDiary('PUBLISHED')">发布</el-button>
       </div>
+    </el-dialog>
+
+    <el-dialog title="修改日记" v-model="changeDialogVisible">
+      <el-form :model="viewDiaryData">
+        <el-form-item label="标题">
+          <el-input v-model="viewDiaryData.title"></el-input>
+        </el-form-item>
+        <el-form-item label="景点名称">
+          <el-input v-model="viewDiaryData.siteName"></el-input>
+        </el-form-item>
+        <el-form-item label="日记内容">
+          <el-input type="textarea" v-model="viewDiaryData.content"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="createDialogVisible = false;">取消</el-button>
+        <el-button type="primary" @click="editDiary(viewDiaryData.id, 'DRAFT')">保存为草稿</el-button>
+        <el-button type="success" @click="editDiary(viewDiaryData.id, 'DRAFT')">发布</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog title="查看日记" v-model="viewDialogVisible">
+      <el-form :model="viewDiaryData">
+        <el-form-item label="标题">
+          <el-input v-model="viewDiaryData.title" readonly></el-input>
+        </el-form-item>
+        <el-form-item label="日记内容">
+          <el-input type="textarea" v-model="viewDiaryData.content" readonly></el-input>
+        </el-form-item>
+        <el-form-item label="地点">
+          <el-input v-model="viewDiaryData.siteName" readonly></el-input>
+        </el-form-item>
+        <el-form-item label="创作者">
+          <el-input v-model="viewDiaryData.studentName" readonly></el-input>
+        </el-form-item>
+        <el-form-item label="评分">
+          <el-input v-model="viewDiaryData.score" readonly></el-input>
+        </el-form-item>
+        <el-form-item label="热度">
+          <el-input v-model="viewDiaryData.popularity" readonly></el-input>
+        </el-form-item>
+        <el-form-item label="修改时间">
+          <el-input v-model="viewDiaryData.modifyTime" readonly></el-input>
+        </el-form-item>
+      </el-form>
     </el-dialog>
   </div>
 </template>
@@ -117,14 +177,28 @@ export default {
     return {
       diaries: [],
       searchQuery: '',
+      sortOption:'RATING',
+      searchPlace: '',
       viewOwnDiaries: true,
+      changeDialogVisible:false,
       createDialogVisible: false,
+      viewDialogVisible: false,
       newDiary: {
         title: '',
         content: '',
         studentName: localStorage.getItem("username"),
         siteName: '',
         status: '',
+      },
+      viewDiaryData: {
+        id:'',
+        title: ' ',
+        content: ' ',
+        siteName: ' ',
+        studentName: ' ',
+        score: '1',
+        popularity: '1',
+        modifyTime: '1',
       }
     };
   },
@@ -151,10 +225,10 @@ export default {
           return;
         }
         axios.get(url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
         )
             .then(response => {
               this.diaries = response.data.data; // assuming response structure contains data
@@ -166,22 +240,86 @@ export default {
         console.error(error);
       }
     },
-    searchDiaries() {
-      const url = this.viewOwnDiaries ? `/api/diary/student?studentName=${this.getStudentName()}` : '/api/diary/search';
-      axios.get(url, {
+    searchDiaries(title,siteName,sortOption) {
+      const studentName = localStorage.getItem("username");
+      const isPublished = !this.viewOwnDiaries;
+      const token = getToken();
+      if (!token) {
+        console.error("Token not found");
+        return;
+      }
+      axios.get('/api/diary/search', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
         params: {
-          title: this.searchQuery,
-          siteName: '',
-          sortOption: '',
+          title,
+          siteName,
+          studentName,
+          sortOption,
           page: 1,
-          size: 10
+          size: 10,
+          isPublished,
         }
       })
           .then(response => {
-            this.diaries = response.data.data; // assuming response structure contains data
+            console.log(response.data.data);
+            this.diaries = response.data.data.records; // assuming response structure contains data
           })
           .catch(error => {
             console.error('Failed to search diaries:', error);
+          });
+    },
+    openEditDiary(id){
+      this.changeDialogVisible = true;
+      const token = getToken();
+      if (!token) {
+        console.error("Token not found");
+        return;
+      }
+      axios.get(`/api/diary`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        params: {
+          id: id
+        }
+      }).then(response => {
+        this.viewDiaryData.id = response.data.data.id;
+        this.viewDiaryData.title = response.data.data.title;
+        this.viewDiaryData.popularity = response.data.data.popularity;
+        this.viewDiaryData.content = response.data.data.content;
+        this.viewDiaryData.siteName = response.data.data.siteName;
+        this.viewDiaryData.studentName = response.data.data.studentName;
+        this.viewDiaryData.score = response.data.data.rating;
+        this.viewDiaryData.modifyTime = response.data.data.updateTime;
+      }).catch(error => {
+        console.error('Failed to view diary:', error);
+      });
+    },
+    querySearch(queryString, cb) {
+      const token = getToken();
+      if (!token) {
+        console.error("Token not found");
+        return;
+      }
+
+      axios.get('/api/place/search', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          type: 'name',
+          query: queryString
+        }
+      })
+          .then(response => {
+            console.log(response.data.data);
+            const suggestions = response.data.data.map(item => ({ value: item.placeName }));
+            cb(suggestions);
+          })
+          .catch(error => {
+            console.error('Failed to fetch suggestions:', error);
           });
     },
     saveDiary(status) {
@@ -212,22 +350,105 @@ export default {
           });
     },
     viewDiary(id) {
-      this.$router.push({ path: `/Diary/View/${id}` });
+      this.viewDialogVisible = true;
+      const token = getToken();
+      if (!token) {
+        console.error("Token not found");
+        return;
+      }
+      axios.get(`/api/diary`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        params: {
+          id: id
+        }
+      }).then(response => {
+        this.viewDiaryData.title = response.data.data.title;
+        this.viewDiaryData.popularity = response.data.data.popularity;
+        this.viewDiaryData.content = response.data.data.content;
+        this.viewDiaryData.siteName = response.data.data.siteName;
+        this.viewDiaryData.studentName = response.data.data.studentName;
+        this.viewDiaryData.score = response.data.data.rating;
+        this.viewDiaryData.modifyTime = response.data.data.updateTime;
+      }).catch(error => {
+            console.error('Failed to view diary:', error);
+          });
     },
-    editDiary(id) {
-      this.$router.push({ path: `/Diary/Edit/${id}` });
+    editDiary(id, status) {
+      this.changeDialogVisible = false;
+      const token = getToken();
+      if (!token) {
+        console.error("Token not found");
+        return;
+      }
+
+      const params = new URLSearchParams();
+      params.append('title', this.viewDiaryData.title);
+      params.append('content', this.viewDiaryData.content);
+      params.append('studentName', this.getStudentName());
+      params.append('id', id);
+      params.append('status', status);
+
+      axios.put('/api/diary/update', params, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded', // 确保正确的 Content-Type
+          'Authorization': `Bearer ${token}`,
+        }
+      })
+          .then(() => {
+            this.createDialogVisible = false;
+            this.fetchDiaries(this.viewOwnDiaries ? `/api/diary/student?studentName=${this.getStudentName()}` : '/api/diaries/search');
+          })
+          .catch(error => {
+            console.error('Failed to save diary:', error);
+          });
     },
     deleteDiary(id) {
-      axios.delete(`/api/diary/${id}`)
+      const token = getToken();
+      if (!token) {
+        console.error("Token not found");
+        return;
+      }
+      axios.delete(`/api/diary/delete`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        params: {
+          id: id,
+          studentName: this.getStudentName()
+        }
+      })
           .then(() => {
-            this.fetchDiaries(this.viewOwnDiaries ? `/api/diary/student?studentName=${this.getStudentName()}` : '/api/diaries/search');
+            this.fetchDiaries(this.viewOwnDiaries ? `/api/diary/student?studentName=${this.getStudentName()}` : '/api/diary/search');
           })
           .catch(error => {
             console.error('Failed to delete diary:', error);
           });
     },
-    rateDiary(id) {
-      this.$router.push({ path: `/Diary/Rate/${id}` });
+    rateDiary(id, rating) {
+      const token = getToken();
+      if (!token) {
+        console.error("Token not found");
+        return;
+      }
+      const params = new URLSearchParams();
+      params.append('score', rating);
+      params.append('id', id);
+
+      axios.put('/api/diary/rate', params, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded', // 确保正确的 Content-Type
+          'Authorization': `Bearer ${token}`,
+        }
+      })
+          .then(() => {
+            this.createDialogVisible = false;
+            this.fetchDiaries(this.viewOwnDiaries ? `/api/diary/student?studentName=${this.getStudentName()}` : '/api/diaries/search');
+          })
+          .catch(error => {
+            console.error('Failed to save diary:', error);
+          });
     },
     getStudentName() {
       // 获取当前登录学生的ID
@@ -240,106 +461,57 @@ export default {
 };
 </script>
 
+
 <style scoped>
 .common-layout {
   height: 100%;
   display: flex;
   flex-direction: column;
+  background-color: #dcdcdc;
 }
+
 .brand {
   font-size: 24px;
   font-weight: bold;
+  color: #333;
 }
+
 .menu-btn {
   display: none;
 }
+
 .navigation {
   display: flex;
   justify-content: flex-end;
   align-items: center;
 }
+
 .navigation-items a {
   margin-left: 20px;
   text-decoration: none;
   color: #000;
 }
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html {
-  font-size: 62.5%;
+html, body, #app {
+  height: 100%;
 }
 
 body {
   font-size: 1.6rem;
   font-family: sans-serif;
-  color: #fff;
+  color: #333;
+  background-color: #dcdcdc;
 }
 
 a {
   text-decoration: none;
   display: inline-block;
-}
-
-.tags-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px; /* 标签之间的间隔 */
-  max-width: 500px;
-}
-
-.tag-item {
-  /* 每行显示四个标签 */
-  width: calc(100% / 4 - (10px * 3 / 4));
-}
-
-/* 确保最后一个标签在新的行中 */
-.tag-item:nth-child(4n) {
-  margin-right: 0;
-}
-
-.input-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-}
-
-.input-button-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.radio-groups-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.blurred-wrapper {
-  height: 100vh;
-  background: url(../assets/background.jfif) center/cover;
-  position: relative;
-  z-index: 1;
-  overflow: hidden;
-  animation: hue 10s infinite alternate;
-}
-
-.blurred-wrapper::after {
-  content: "";
-  width: 100%;
-  height: 100%;
-  background: inherit;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
-  filter: blur(2rem);
-  transform: scale(1.15);
 }
 
 @keyframes hue {
@@ -349,12 +521,6 @@ a {
   to {
     filter: hue-rotate(360deg);
   }
-}
-
-.container {
-  max-width: 120rem;
-  margin: 0 auto;
-  padding: 0 1.5rem;
 }
 
 header {
@@ -368,10 +534,11 @@ header {
   padding: 15px 200px;
   transition: 0.5s ease;
   align-items: center;
+  background-color: #f8f8f8;
 }
 
 .brand {
-  color: #fff;
+  color: #333;
   font-size: 1.5rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -384,7 +551,7 @@ header .navigation {
 
 header .navigation .navigation-items a {
   position: relative;
-  color: #fff;
+  color: #333;
   font-size: 1rem;
   font-weight: 500;
   text-decoration: none;
@@ -397,7 +564,7 @@ header .navigation .navigation-items a::before {
   position: absolute;
   bottom: 0;
   left: 0;
-  background-color: #fff;
+  background-color: #333;
   width: 0;
   height: 3px;
   transition: 0.3s ease;
@@ -411,61 +578,27 @@ section {
   padding: 100px 200px;
 }
 
-.hero {
-  margin-top: 200px;
-  padding: 15px 200px;
+.search-bar {
   display: flex;
   align-items: center;
-  height: calc(100vh - 12rem);
+  margin-bottom: 10px;
 }
 
-.content-wrapper {
-  max-width: 40rem;
-  transform: translateY(-4rem);
+.search-bar .el-input,
+.search-bar .el-autocomplete,
+.search-bar .el-radio-group,
+.search-bar .el-button {
+  margin-right: 10px;
 }
 
-.title {
-  font-size: 70px;
-  margin-bottom: 2rem;
-  color: darkkhaki;
+.el-table th,
+.el-table td {
+  color: #333;
 }
 
-.message {
-  font-size: 30px;
-  margin-bottom: 3rem;
-  color: grey;
-}
-
-.input-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-}
-
-#chart {
-  margin-top: 20px;
-}
-
-@media screen and (min-width: 768px) {
-  .btn {
-    padding: 1.5rem 3rem;
-  }
-
-  .content-wrapper {
-    max-width: 60rem;
-  }
-
-  .tagline {
-    font-size: 1.6rem;
-  }
-
-  .title {
-    font-size: 6rem;
-  }
-
-  .message {
-    font-size: 2rem;
-  }
+.el-dialog__header,
+.el-dialog__body,
+.el-dialog__footer {
+  background-color: #f8f8f8;
 }
 </style>
