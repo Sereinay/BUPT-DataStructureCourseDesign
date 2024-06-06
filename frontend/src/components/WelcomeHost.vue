@@ -51,7 +51,7 @@ export default {
   name: 'WelcomeHost',
   methods:{
     logout(){
-      logout(()=>{
+      logout(()=>{localStorage.removeItem("username")
         router.push('/')
       })
     }
