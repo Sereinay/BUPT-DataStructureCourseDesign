@@ -35,12 +35,13 @@ public class DiaryController {
             @RequestParam Long id,
             @RequestParam String title,
             @RequestParam String content,
+            @RequestParam DiaryStatusEnum status,
             @RequestParam String studentName) throws JsonProcessingException {
-        String result = diaryService.updateDiary(title, content, studentName, id);
+        String result = diaryService.updateDiary(title, content, status, studentName, id);
         return RestBean.success(result);
     }
 
-    @PostMapping("/rate")
+    @PutMapping("/rate")
     public RestBean<Boolean> rateDiary(@RequestParam Long id, @RequestParam double score) {
         boolean result = diaryService.rateDiary(id, score);
         return RestBean.success(result);
