@@ -30,10 +30,10 @@
                 placeholder="请输入地点">
             </el-autocomplete>
             <el-radio-group v-model="sortOption">
-              <el-radio label="POPULARITY" @click = "sortOption = 'POPULARITY'">按热度</el-radio>
-              <el-radio label="RATING" @click = "sortOption = 'RATING'">按评分</el-radio>
+              <el-radio label="POPULARITY" @click="sortOption = 'POPULARITY'">按热度</el-radio>
+              <el-radio label="RATING" @click="sortOption = 'RATING'">按评分</el-radio>
             </el-radio-group>
-            <el-button type="primary" @click="searchDiaries(searchQuery,searchPlace,sortOption)">搜索</el-button>
+            <el-button type="primary" @click="searchDiaries(searchQuery, searchPlace, sortOption)">搜索</el-button>
           </div>
           <el-button v-if="viewOwnDiaries" type="primary" @click="createDialogVisible = true">创建日记</el-button>
           <el-table :data="diaries" style="width: 100%">
@@ -50,7 +50,7 @@
             <el-table-column v-else label="操作">
               <template v-slot:default="scope">
                 <el-button size="small" @click="viewDiary(scope.row.id)">查看</el-button>
-                <el-button size="small" type="success" @click="rateDiary(scope.row.id)">评分</el-button>
+                <el-rate v-model="scope.row.rating" @change="rateDiary(scope.row.id, scope.row.rating)"></el-rate>
               </template>
             </el-table-column>
           </el-table>
@@ -130,7 +130,7 @@
 
 <script>
 import axios from 'axios';
-import {logout} from "@/net/index.js";
+import { logout } from "@/net/index.js";
 import router from "@/router/index.js";
 import dayjs from "dayjs";
 
@@ -177,10 +177,10 @@ export default {
     return {
       diaries: [],
       searchQuery: '',
-      sortOption:'RATING',
+      sortOption: 'RATING',
       searchPlace: '',
       viewOwnDiaries: true,
-      changeDialogVisible:false,
+      changeDialogVisible: false,
       createDialogVisible: false,
       viewDialogVisible: false,
       newDiary: {
@@ -191,7 +191,7 @@ export default {
         status: '',
       },
       viewDiaryData: {
-        id:'',
+        id: '',
         title: ' ',
         content: ' ',
         siteName: ' ',
@@ -225,11 +225,10 @@ export default {
           return;
         }
         axios.get(url, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-        )
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
             .then(response => {
               this.diaries = response.data.data; // assuming response structure contains data
             })
@@ -240,7 +239,7 @@ export default {
         console.error(error);
       }
     },
-    searchDiaries(title,siteName,sortOption) {
+    searchDiaries(title, siteName, sortOption) {
       const studentName = localStorage.getItem("username");
       const isPublished = !this.viewOwnDiaries;
       const token = getToken();
@@ -270,7 +269,7 @@ export default {
             console.error('Failed to search diaries:', error);
           });
     },
-    openEditDiary(id){
+    openEditDiary(id) {
       this.changeDialogVisible = true;
       const token = getToken();
       if (!token) {
@@ -372,8 +371,8 @@ export default {
         this.viewDiaryData.score = response.data.data.rating;
         this.viewDiaryData.modifyTime = response.data.data.updateTime;
       }).catch(error => {
-            console.error('Failed to view diary:', error);
-          });
+        console.error('Failed to view diary:', error);
+      });
     },
     editDiary(id, status) {
       this.changeDialogVisible = false;
@@ -460,7 +459,6 @@ export default {
   }
 };
 </script>
-
 
 <style scoped>
 .common-layout {
