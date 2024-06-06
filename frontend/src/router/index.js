@@ -45,11 +45,12 @@ const router = createRouter({
             path: '/NodeRelative',
             name: 'Node-Relative',
             component: () => import('@/components/NodeRelative.vue')
-        },{
-            path: '/FoodRecommend',
-            name: 'Food',
-            component: () => import('@/components/FoodRecommend.vue')
-        }
+        },
+        {
+            path: '/diary/',
+            name: 'diary',
+            component: () => import('@/components/Diary.vue') },
+
     ]
 })
 
