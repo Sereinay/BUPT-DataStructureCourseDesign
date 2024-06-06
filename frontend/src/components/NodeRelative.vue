@@ -173,6 +173,7 @@ export default {
   methods: {
     logout() {
       logout(() => {
+        localStorage.removeItem("username")
         router.push('/')
       })
     }
