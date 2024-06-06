@@ -7,7 +7,7 @@
         <div class="navigation-items">
           <a href="#">主页</a>
           <a href="/TravelLanding">景点预览</a>
-          <a href="#">日记管理</a>
+          <a href="/Diary">日记管理</a>
           <a href="/InnerNavigate">内部导航</a>
           <a @click="logout">退出登录</a>
         </div>
